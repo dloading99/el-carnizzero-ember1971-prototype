@@ -1,0 +1,186 @@
+:root {
+    --bg-color: #050505;
+    --text-color: #e6e6e6;
+    --accent-fire: #ff4d00;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-tech: 'Manrope', sans-serif;
+    --easing: cubic-bezier(0.19, 1, 0.22, 1); /* Expo Out */
+}
+
+*, *::before, *::after { box-sizing: border-box; cursor: none; /* Nascondiamo cursore default */ }
+
+body {
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-tech);
+    overflow: hidden; /* Gestito da JS custom scroll */
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- 1. LOADER & NOISE --- */
+.noise {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.06; pointer-events: none; z-index: 900;
+}
+
+.loader-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 1000;
+    display: flex; justify-content: center; align-items: center; flex-direction: column;
+    transition: transform 1s var(--easing);
+}
+
+.loader-text { font-family: var(--font-display); font-size: 3rem; color: var(--accent-fire); margin-bottom: 20px; }
+.loader-progress { width: 0%; height: 2px; background: #fff; transition: width 0.5s; }
+
+body.loaded .loader-overlay { transform: translateY(-100%); }
+
+/* --- 2. CANVAS & CURSOR --- */
+#ember-canvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; opacity: 0.6; pointer-events: none;
+}
+
+.cursor {
+    width: 8px; height: 8px; background: #fff; border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 999;
+    mix-blend-mode: difference; transition: transform 0.1s;
+}
+.cursor-follower {
+    width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 998;
+    transition: transform 0.15s, width 0.3s, height 0.3s, background-color 0.3s;
+    mix-blend-mode: difference;
+}
+.cursor-follower.active { transform: scale(1.5); background-color: rgba(255,255,255,0.1); border-color: transparent; }
+
+/* --- 3. NAVIGATION --- */
+.main-nav {
+    position: fixed; top: 0; left: 0; width: 100%; padding: 2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center; z-index: 100;
+    mix-blend-mode: difference;
+}
+.nav-logo { font-weight: 800; letter-spacing: 2px; font-size: 1.2rem; }
+.nav-menu { display: flex; gap: 3rem; }
+.nav-link { 
+    text-decoration: none; color: #fff; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; 
+    position: relative; overflow: hidden;
+}
+.nav-link span { display: inline-block; transition: transform 0.4s var(--easing); }
+.nav-link:hover span { transform: translateY(-100%); }
+.nav-link::after {
+    content: attr(data-text); position: absolute; top: 100%; left: 0;
+    width: 100%; height: 100%; transition: transform 0.4s var(--easing);
+}
+
+/* --- 4. HERO SECTION --- */
+.hero-section {
+    height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    padding: 0 5vw; position: relative;
+}
+.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 12vw, 10rem);
+    line-height: 0.85; text-transform: uppercase;
+    margin: 0;
+}
+.line-mask { overflow: hidden; }
+.anim-text { display: block; transform: translateY(110%); transition: transform 1.5s var(--easing); }
+body.loaded .anim-text { transform: translateY(0); }
+
+.indent { margin-left: 15vw; color: var(--accent-fire); font-style: italic; }
+.text-outline { 
+    color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.5); 
+    transition: all 0.5s; 
+}
+.text-outline:hover { -webkit-text-stroke: 0px; color: #fff; filter: url(#heatMap); }
+
+.hero-year {
+    margin-top: 4rem; font-size: 0.9rem; letter-spacing: 3px; opacity: 0.6;
+    border-top: 1px solid rgba(255,255,255,0.2); display: inline-block; padding-top: 1rem;
+}
+
+/* --- 5. VISUAL & CONTENT --- */
+.visual-section { padding: 10vh 5vw; }
+.big-paragraph {
+    font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.2; max-width: 90%; margin-bottom: 10vh;
+}
+.highlight { color: var(--accent-fire); font-style: italic; }
+
+.parallax-image-wrapper {
+    width: 100%; height: 80vh; overflow: hidden; position: relative;
+}
+.parallax-img { width: 100%; height: 120%; object-fit: cover; }
+
+/* --- 6. COLLECTION (Horizontal) --- */
+.collection-section { padding: 10vh 0; overflow: hidden; }
+.collection-header { padding: 0 5vw 4rem 5vw; }
+.collection-header h2 { font-family: var(--font-tech); font-weight: 200; font-size: 1rem; letter-spacing: 4px; }
+
+.horizontal-scroll-wrapper {
+    display: flex; gap: 5vw; padding: 0 5vw;
+}
+.collection-card { min-width: 40vw; position: relative; }
+.card-num { font-size: 5rem; font-family: var(--font-display); color: rgba(255,255,255,0.1); margin-bottom: -2rem; z-index: 2; position: relative; }
+.card-img-box {
+    width: 100%; height: 60vh; overflow: hidden; position: relative;
+    filter: grayscale(100%); transition: filter 0.5s;
+}
+.collection-card:hover .card-img-box { filter: grayscale(0%); }
+.card-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s; }
+.collection-card:hover img { transform: scale(1.1); }
+
+.hover-reveal {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+    width: 100px; height: 100px; background: var(--accent-fire); border-radius: 50%;
+    display: flex; justify-content: center; align-items: center; color: #000; font-weight: 600;
+    transition: transform 0.4s var(--easing); pointer-events: none;
+}
+.card-img-box:hover .hover-reveal { transform: translate(-50%, -50%) scale(1); }
+
+.card-info { margin-top: 1rem; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 1rem; }
+.card-info h3 { font-size: 1.5rem; font-weight: 400; margin: 0; }
+.card-info p { color: #888; font-size: 0.9rem; margin: 0; }
+
+/* --- 7. FOOTER --- */
+.footer-experience {
+    position: relative; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    overflow: hidden; text-align: center;
+}
+.footer-video-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+}
+.footer-video-bg video { width: 100%; height: 100%; object-fit: cover; }
+.video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+
+.footer-cta {
+    font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6rem);
+    cursor: pointer; position: relative; z-index: 2; margin-bottom: 4rem;
+    transition: color 0.3s;
+}
+.footer-cta:hover { color: var(--accent-fire); font-style: italic; }
+
+.footer-meta {
+    display: flex; gap: 5rem; z-index: 2; text-align: left; font-size: 0.9rem; color: #ccc;
+}
+.footer-meta .col { display: flex; flex-direction: column; gap: 0.5rem; }
+.footer-meta span { color: #666; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
+.footer-meta a { color: #fff; text-decoration: none; transition: color 0.3s; }
+.footer-meta a:hover { color: var(--accent-fire); }
+
+.big-brand-footer {
+    position: absolute; bottom: -2vw; left: 0; width: 100%; text-align: center;
+    font-size: 15vw; font-weight: 800; color: rgba(255,255,255,0.03);
+    white-space: nowrap; pointer-events: none;
+}
+
+/* Responsività Base */
+@media(max-width: 768px) {
+    .hero-title { font-size: 16vw; }
+    .indent { margin-left: 0; }
+    .footer-meta { flex-direction: column; gap: 2rem; text-align: center; }
+    .nav-menu { display: none; }
+}
